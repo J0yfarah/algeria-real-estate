@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import time
+import os
 
 URL = "https://api.ouedkniss.com/graphql"
 
@@ -106,10 +107,17 @@ def fetch_immobilier():
     return all_rows
 
 
+
 def save_to_csv(data, filename="immobilier.csv"):
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    output_dir = os.path.join(base_dir, "data", "raw")
+    os.makedirs(output_dir, exist_ok=True)
+    filepath = os.path.join(output_dir, filename)
+
     df = pd.DataFrame(data)
-    df.to_csv(filename, index=False, encoding="utf-8-sig")
-    print(f"Saved {len(df)} rows → {filename}")
+    df.to_csv(filepath, index=False, encoding="utf-8-sig")
+    print(f"Saved {len(df)} rows → {filepath}")
+
 
 
 if __name__ == "__main__":
