@@ -350,10 +350,137 @@ fragment AnnouncementContent on Announcement {
 
 * * * * *
 
-✅ This is the **main endpoint for scraping listings** in a category.
+This is the **main endpoint for scraping listings** in a category.
 
 -   Use `categorySlug` in `filter` to change the category.
 
 -   Use `page` to paginate through all listings.
 
 -   Each announcement contains **all essential info for scraping**, including media URLs, price, and city.
+
+
+**Announcement Details Query (`AnnouncementGet`)**
+----------------------------------------------
+
+**Purpose:**\
+Retrieve detailed information for a single announcement (real estate listing) from the platform by its unique `id`.
+
+ **Query**
+
+`query AnnouncementGet($id: ID!) {
+  announcement: announcementDetails(id: $id) {
+    id
+    reference
+    title
+    slug
+    description
+    orderExternalUrl
+    createdAt: refreshedAt
+    price
+    pricePreview
+    oldPrice
+    oldPricePreview
+    priceType
+    exchangeType
+    priceUnit
+    hasDelivery
+    deliveryType
+    hasPhone
+    hasEmail
+    quantity
+    status
+    street_name
+    category { ... }
+    defaultMedia(size: ORIGINAL) { ... }
+    medias(size: LARGE) { ... }
+    categories { ... }
+    specs { ... }
+    user { ... }
+    isFromStore
+    store { ... }
+    cities { ... }
+    isCommentEnabled
+    noAdsense
+    variants { ... }
+    showAnalytics
+    messengerLink
+  }
+}`
+
+**Variables**
+
+`{
+  "id": "<announcement_id>"
+}`
+
+**Returned Fields**
+
+**1\. Basic Listing Information:**
+
+| Field | Description |
+| --- | --- |
+| `id` | Unique announcement identifier |
+| `reference` | Optional reference code |
+| `title` | Listing title |
+| `slug` | URL-friendly slug |
+| `description` | Full textual description |
+| `createdAt` | Creation or last refreshed timestamp |
+| `status` | Listing status (e.g., `PUBLISHED`) |
+| `street_name` | Street or neighborhood name |
+
+**2\. Pricing Information:**
+
+| Field | Description |
+| --- | --- |
+| `price` | Main numeric price (may be 0 if only `pricePreview` is set) |
+| `pricePreview` | Display price (what users see) |
+| `oldPrice` | Previous price |
+| `oldPricePreview` | Previous display price |
+| `priceType` | Type of price (e.g., `OFFERED`) |
+| `exchangeType` | Optional exchange info |
+| `priceUnit` | Unit of the price (e.g., `UNIT`, `MILLION`) |
+| `quantity` | Number of units available |
+
+**3\. Media:**
+
+-   `defaultMedia` → Main image
+
+-   `medias` → All images/videos associated with listing
+
+**4\. Categories & Specs:**
+
+-   `category` → Primary category (e.g., Villa, Appartement)
+
+-   `categories` → Full category hierarchy
+
+-   `specs` → Structured property specifications (rooms, area, floors, amenities, papers)
+
+**5\. User & Store Information:**
+
+-   `user` → Seller information
+
+-   `isFromStore` → Boolean indicating store listing
+
+-   `store` → Store details if applicable
+
+**6\. Location:**
+
+-   `cities` → City and associated region/wilaya
+
+**7\. Additional Features:**
+
+-   `variants` → Different variants of the same listing (e.g., multiple apartments)
+
+-   `showAnalytics` → Boolean for analytics visibility
+
+-   `messengerLink` → Optional direct chat link
+
+-   `hasPhone`, `hasEmail`, `hasDelivery` → Contact & delivery flags
+
+**Notes:**
+
+-   The `specs` array contains detailed structured information such as **superficie**, **number of rooms**, **floors**, and **amenities**.
+
+-   `variants` may include alternative pricing or specifications for the same property (useful for promotions or multi-unit listings).
+
+-   `price` may sometimes be 0 if only `pricePreview` is displayed; always check `priceUnit` for correct conversion.
